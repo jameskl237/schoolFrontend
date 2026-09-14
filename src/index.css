@@ -1,111 +1,186 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: 'Fredoka', var(--font-sans);
+    --font-sans: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-success: var(--success);
+    --color-warning: var(--warning);
+    --color-highlight: var(--highlight);
+    --color-highlight-foreground: var(--highlight-foreground);
+    --color-brand-panel: var(--brand-panel);
+    --color-brand-panel-foreground: var(--brand-panel-foreground);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Ndop & Savane — identité camerounaise, vert savane en primaire, or en accent, terre cuite pour les alertes */
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+    --background: #f8f5ee;
+    --foreground: #241f1a;
+    --card: #ffffff;
+    --card-foreground: #241f1a;
+    --popover: #ffffff;
+    --popover-foreground: #241f1a;
+    --primary: #2f7a52;
+    --primary-foreground: #fbf8f0;
+    --secondary: #ece4d3;
+    --secondary-foreground: #241f1a;
+    --muted: #ece4d3;
+    --muted-foreground: #5e5648;
+    --accent: #f1e9d8;
+    --accent-foreground: #241f1a;
+    --destructive: #b14a34;
+    --success: #4b7a52;
+    --warning: #b05a1f;
+    --highlight: #c98a1f;
+    --highlight-foreground: #241f1a;
+    --brand-panel: #2f7a52;
+    --brand-panel-foreground: #fbf8f0;
+    --border: #ded1b8;
+    --input: #ded1b8;
+    --ring: #c98a1f;
+    --chart-1: #2f7a52;
+    --chart-2: #c98a1f;
+    --chart-3: #4b7a52;
+    --chart-4: #b14a34;
+    --chart-5: #8a8267;
+    --radius: 0.75rem;
+    --sidebar: #ece4d3;
+    --sidebar-foreground: #241f1a;
+    --sidebar-primary: #2f7a52;
+    --sidebar-primary-foreground: #fbf8f0;
+    --sidebar-accent: #f1e9d8;
+    --sidebar-accent-foreground: #241f1a;
+    --sidebar-border: #ded1b8;
+    --sidebar-ring: #c98a1f;
+}
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+.dark {
+    --background: #141620;
+    --foreground: #f1eee5;
+    --card: #1b1e2b;
+    --card-foreground: #f1eee5;
+    --popover: #1b1e2b;
+    --popover-foreground: #f1eee5;
+    --primary: #7dc79a;
+    --primary-foreground: #141620;
+    --secondary: #242739;
+    --secondary-foreground: #f1eee5;
+    --muted: #242739;
+    --muted-foreground: #b4b0c4;
+    --accent: #2a2d42;
+    --accent-foreground: #f1eee5;
+    --destructive: #e2694c;
+    --success: #7fbf8a;
+    --warning: #e0964b;
+    --highlight: #f2bb4e;
+    --highlight-foreground: #241f1a;
+    --brand-panel: #1c3d29;
+    --brand-panel-foreground: #f1eee5;
+    --border: #343850;
+    --input: #343850;
+    --ring: #f2bb4e;
+    --chart-1: #7dc79a;
+    --chart-2: #f2bb4e;
+    --chart-3: #7fbf8a;
+    --chart-4: #e2694c;
+    --chart-5: #b4af95;
+    --sidebar: #1b1e2b;
+    --sidebar-foreground: #f1eee5;
+    --sidebar-primary: #7dc79a;
+    --sidebar-primary-foreground: #141620;
+    --sidebar-accent: #2a2d42;
+    --sidebar-accent-foreground: #f1eee5;
+    --sidebar-border: #343850;
+    --sidebar-ring: #f2bb4e;
+}
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
+  html {
+    @apply font-sans;
+    }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+    }
+}
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
+/* Reveal + lift — the scroll-showcase motion language, reused across every page */
+.rv {
+  opacity: 0;
+  transform: translateY(14px);
+  filter: blur(3px);
+  transition:
+    opacity 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 0.5s ease;
+}
+.rv.in {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rv {
+    transition: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+.lift {
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -14px rgb(0 0 0 / 0.25);
 }
