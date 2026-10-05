@@ -27,7 +27,7 @@ function ParentDashboard() {
     <>
       <PageHeader
         title="Tableau de bord"
-        description="Le suivi de la scolarité de vos enfants, en un coup d\u2019œil."
+        description="Le suivi de la scolarité de vos enfants, en un coup d’œil."
       />
 
       {isLoading ? (

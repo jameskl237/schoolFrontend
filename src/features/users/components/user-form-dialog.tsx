@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useRolesQuery } from '@/features/roles/api/roles-api'
 import { formatRoleName } from '@/lib/format-role-name'
 import { getErrorMessage } from '@/lib/get-error-message'
@@ -39,7 +39,7 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [phone, setPhone] = useState('')
-  const [roleIds, setRoleIds] = useState<number[]>([])
+  const [roleId, setRoleId] = useState('')
 
   useEffect(() => {
     if (!open) return
@@ -49,12 +49,8 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
     setFirstName(user?.firstName ?? '')
     setLastName(user?.lastName ?? '')
     setPhone(user?.phone ?? '')
-    setRoleIds(user?.roles.map((role) => role.id) ?? [])
+    setRoleId(user?.roleId ? String(user.roleId) : '')
   }, [open, user])
-
-  const toggleRole = (roleId: number, checked: boolean) => {
-    setRoleIds((current) => (checked ? [...current, roleId] : current.filter((id) => id !== roleId)))
-  }
 
   const isLoading = isCreating || isUpdating
 
@@ -69,7 +65,7 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
           firstName,
           lastName,
           phone: phone || undefined,
-          roleIds,
+          roleId: Number(roleId),
           ...(password ? { password } : {}),
         }).unwrap()
         toast.success('Utilisateur mis à jour')
@@ -80,7 +76,7 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
           firstName,
           lastName,
           phone: phone || undefined,
-          roleIds,
+          roleId: Number(roleId),
         }).unwrap()
         toast.success('Utilisateur créé')
       }
@@ -160,28 +156,37 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
             <Input id="phone" value={phone} onChange={(event) => setPhone(event.target.value)} />
           </div>
 
-          {roles && roles.length > 0 && (
-            <div className="grid gap-2">
-              <Label>Rôles</Label>
-              <div className="grid gap-2.5 rounded-lg border border-border p-3">
-                {roles.map((role) => (
-                  <label key={role.id} className="flex items-center justify-between gap-2 text-sm">
-                    <span>{formatRoleName(role.name)}</span>
-                    <Switch
-                      checked={roleIds.includes(role.id)}
-                      onCheckedChange={(checked) => toggleRole(role.id, checked)}
-                    />
-                  </label>
+          <div className="grid gap-1.5">
+            <Label htmlFor="roleId">Rôle</Label>
+            <Select value={roleId} onValueChange={(value) => setRoleId(value ?? '')}>
+              <SelectTrigger id="roleId" className="w-full">
+                <SelectValue>
+                  {(value: string) => {
+                    if (!value) return 'Choisir un rôle'
+                    const role = roles?.find((r) => String(r.id) === value)
+                    return role ? formatRoleName(role.name) : value
+                  }}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {roles?.map((role) => (
+                  <SelectItem key={role.id} value={String(role.id)}>
+                    {formatRoleName(role.name)}
+                  </SelectItem>
                 ))}
-              </div>
-            </div>
-          )}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Le rôle détermine ce que la personne est dans l&rsquo;application et ce qu&rsquo;elle
+              peut y faire. Un compte n&rsquo;en porte qu&rsquo;un seul.
+            </p>
+          </div>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Annuler
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading || !roleId}>
               {isLoading ? 'Enregistrement…' : 'Enregistrer'}
             </Button>
           </DialogFooter>

@@ -1,7 +1,12 @@
 import { baseApi } from '@/app/api/base-api'
 import type { ApiSuccess } from '@/types/api'
 
-import type { CreateTeacherRequest, Teacher, UpdateTeacherRequest } from '../types'
+import type {
+  CreateTeacherRequest,
+  CreateTeacherResponse,
+  Teacher,
+  UpdateTeacherRequest,
+} from '../types'
 
 export const teachersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,10 +18,10 @@ export const teachersApi = baseApi.injectEndpoints({
         ...(result?.map((teacher) => ({ type: 'Teachers' as const, id: teacher.id })) ?? []),
       ],
     }),
-    createTeacher: builder.mutation<Teacher, CreateTeacherRequest>({
+    createTeacher: builder.mutation<CreateTeacherResponse, CreateTeacherRequest>({
       query: (body) => ({ url: '/teachers', method: 'POST', body }),
-      transformResponse: (response: ApiSuccess<Teacher>) => response.data,
-      invalidatesTags: [{ type: 'Teachers', id: 'LIST' }],
+      transformResponse: (response: ApiSuccess<CreateTeacherResponse>) => response.data,
+      invalidatesTags: [{ type: 'Teachers', id: 'LIST' }, { type: 'Users', id: 'LIST' }],
     }),
     updateTeacher: builder.mutation<Teacher, UpdateTeacherRequest>({
       query: ({ id, ...body }) => ({ url: `/teachers/${id}`, method: 'PATCH', body }),

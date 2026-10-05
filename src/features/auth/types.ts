@@ -25,7 +25,11 @@ export interface LoginRequest {
   email: string
   password: string
   /** Format TYPE-VILLE-000, ex. SEC-YDE-014 */
-  establishmentCode: string
+  /**
+   * Facultatif : l'adresse suffit. Le code n'est réclamé que si les mêmes
+   * identifiants ouvrent un compte dans plusieurs établissements.
+   */
+  establishmentCode?: string
 }
 
 export interface AuthPayload {

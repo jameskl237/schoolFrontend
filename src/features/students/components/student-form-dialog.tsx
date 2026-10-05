@@ -25,7 +25,7 @@ import { getErrorMessage } from '@/lib/get-error-message'
 
 import { useCreateStudentMutation, useUpdateStudentMutation } from '../api/students-api'
 import { genderLabels } from '../labels'
-import type { CreatedParentCredentials, Gender, Student } from '../types'
+import type { CreatedAccountCredentials, CreatedParentCredentials, Gender, Student } from '../types'
 
 interface StudentFormDialogProps {
   open: boolean
@@ -44,6 +44,7 @@ export function StudentFormDialog({ open, onOpenChange, student }: StudentFormDi
   const [createStudent, { isLoading: isCreating }] = useCreateStudentMutation()
   const [updateStudent, { isLoading: isUpdating }] = useUpdateStudentMutation()
   const [createdParent, setCreatedParent] = useState<CreatedParentCredentials | null>(null)
+  const [createdAccount, setCreatedAccount] = useState<CreatedAccountCredentials | null>(null)
 
   const [studentNumber, setStudentNumber] = useState('')
   const [firstName, setFirstName] = useState('')
@@ -129,6 +130,10 @@ export function StudentFormDialog({ open, onOpenChange, student }: StudentFormDi
       } else {
         const result = await createStudent(payload).unwrap()
         toast.success('Élève créé')
+        if (result.account) {
+          setCreatedAccount(result.account)
+        }
+
         if (result.createdParent?.loginEmail) {
           setCreatedParent(result.createdParent)
         }
@@ -383,28 +388,71 @@ export function StudentFormDialog({ open, onOpenChange, student }: StudentFormDi
         </form>
       </DialogContent>
 
-      <Dialog open={Boolean(createdParent)} onOpenChange={(open) => !open && setCreatedParent(null)}>
+      <Dialog
+        open={Boolean(createdAccount ?? createdParent)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setCreatedAccount(null)
+            setCreatedParent(null)
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Compte parent créé</DialogTitle>
+            <DialogTitle>Identifiants à transmettre</DialogTitle>
             <DialogDescription>
-              Transmettez ces identifiants à {createdParent?.firstName} {createdParent?.lastName}. Ils
-              permettent au parent de consulter les notes, bulletins, mesures disciplinaires et
-              absences de {`${firstName} ${lastName}`}.
+              Ces mots de passe ne sont affichés qu&rsquo;une fois : notez-les avant de fermer.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="bg-muted/40 rounded-lg border p-4 font-mono text-sm">
-            <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1.5">
-              <span className="font-sans text-muted-foreground">Identifiant</span>
-              <span className="text-right font-medium">{createdParent?.loginEmail}</span>
-              <span className="font-sans text-muted-foreground">Mot de passe</span>
-              <span className="text-right font-medium">{createdParent?.password}</span>
+          {createdAccount && (
+            <div className="grid gap-1.5">
+              <p className="text-sm font-medium">
+                Compte de {firstName} {lastName}
+              </p>
+              <div className="bg-muted/40 rounded-lg border p-4 font-mono text-sm">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1.5">
+                  <span className="font-sans text-muted-foreground">Identifiant</span>
+                  <span className="text-right font-medium">{createdAccount.loginEmail}</span>
+                  <span className="font-sans text-muted-foreground">Mot de passe</span>
+                  <span className="text-right font-medium">{createdAccount.password}</span>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {createdParent?.isSelf && (
+            <p className="text-sm text-muted-foreground">
+              Aucun parent n&rsquo;ayant été renseigné, l&rsquo;élève est déclaré son propre
+              responsable : ce compte sert aussi de contact principal.
+            </p>
+          )}
+
+          {createdParent?.loginEmail && (
+            <div className="grid gap-1.5">
+              <p className="text-sm font-medium">
+                Compte de {createdParent.firstName} {createdParent.lastName} (responsable)
+              </p>
+              <div className="bg-muted/40 rounded-lg border p-4 font-mono text-sm">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1.5">
+                  <span className="font-sans text-muted-foreground">Identifiant</span>
+                  <span className="text-right font-medium">{createdParent.loginEmail}</span>
+                  <span className="font-sans text-muted-foreground">Mot de passe</span>
+                  <span className="text-right font-medium">{createdParent.password}</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           <DialogFooter>
-            <Button onClick={() => setCreatedParent(null)}>Fermer</Button>
+            <Button
+              onClick={() => {
+                setCreatedAccount(null)
+                setCreatedParent(null)
+              }}
+            >
+              Fermer
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

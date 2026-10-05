@@ -27,7 +27,17 @@ export interface StudentLinkRequest {
   isPrimaryContact?: boolean
 }
 
+/** Identifiants du compte ouvert d'office pour le parent. */
+export interface CreatedAccountCredentials {
+  loginEmail: string
+  password: string
+}
+
+export type CreateParentResponse = Parent & { account: CreatedAccountCredentials }
+
 export interface CreateParentRequest {
+  /** Mot de passe initial du compte créé. */
+  password?: string
   firstName: string
   lastName: string
   phone?: string

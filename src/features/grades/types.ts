@@ -18,6 +18,9 @@ export interface Grade {
     maxScore: number
     coefficient: number
     validatedAt: string | null
+    /** Épreuve PDF mise en ligne par l'enseignant (nom d'origine côté client). */
+    examPaperPath: string | null
+    examPaperName: string | null
     classSubject: {
       id: number
       teacherId: number

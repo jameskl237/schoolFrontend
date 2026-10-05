@@ -1,9 +1,11 @@
-import { FileText, GraduationCap } from 'lucide-react'
+import { Download, FileText, GraduationCap } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import { EmptyState } from '@/components/empty-state'
 import { PageHeader } from '@/components/page-header'
 import { Reveal } from '@/components/reveal'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -86,6 +88,15 @@ export function MyChildrenReportCardsPage() {
                         <span className="text-muted-foreground">/20</span>
                       </p>
                     )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      nativeButton={false}
+                      render={<Link to={`/report-cards/${reportCard.id}/bulletin?print=1`} />}
+                    >
+                      <Download />
+                      Bulletin PDF
+                    </Button>
                   </div>
                 </div>
 

@@ -27,6 +27,14 @@ export interface Teacher {
   classSubjects: TeacherAssignment[]
 }
 
+/** Identifiants du compte ouvert d'office pour l'enseignant. */
+export interface CreatedAccountCredentials {
+  loginEmail: string
+  password: string
+}
+
+export type CreateTeacherResponse = Teacher & { account: CreatedAccountCredentials | null }
+
 export interface CreateTeacherRequest {
   employeeNumber: string
   firstName: string
@@ -36,7 +44,10 @@ export interface CreateTeacherRequest {
   email?: string
   hireDate?: string
   specialty?: string
+  /** Compte existant à rattacher ; sans lui, un compte est ouvert automatiquement. */
   userId?: number
+  /** Mot de passe initial du compte créé. */
+  password?: string
 }
 
 export interface UpdateTeacherRequest {

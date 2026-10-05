@@ -2,6 +2,7 @@ import { baseApi } from '@/app/api/base-api'
 import type { ApiSuccess } from '@/types/api'
 
 import type {
+  Bulletin,
   CreateReportCardRequest,
   ReportCard,
   ReportCardFilters,
@@ -10,6 +11,11 @@ import type {
 
 export const reportCardsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    bulletin: builder.query<Bulletin, number>({
+      query: (id) => `/report-cards/${id}/bulletin`,
+      transformResponse: (response: ApiSuccess<Bulletin>) => response.data,
+      providesTags: (_r, _e, id) => [{ type: 'ReportCards' as const, id }],
+    }),
     reportCards: builder.query<ReportCard[], ReportCardFilters | void>({
       query: (filters) => ({
         url: '/report-cards',
@@ -48,6 +54,7 @@ export const reportCardsApi = baseApi.injectEndpoints({
 })
 
 export const {
+  useBulletinQuery,
   useReportCardsQuery,
   useCreateReportCardMutation,
   useUpdateReportCardMutation,

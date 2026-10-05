@@ -4,6 +4,7 @@ import type { FetchBaseQueryError } from '@reduxjs/toolkit/query'
 import { Plus, X } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { CredentialsDialog, type AccountCredentials } from '@/components/credentials-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -84,6 +85,7 @@ export function GuardianFormDialog({ open, onOpenChange, guardian }: GuardianFor
   }
 
   const isLoading = isCreating || isUpdating
+  const [createdAccount, setCreatedAccount] = useState<AccountCredentials | null>(null)
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -111,8 +113,12 @@ export function GuardianFormDialog({ open, onOpenChange, guardian }: GuardianFor
         await updateGuardian({ id: guardian.id, ...payload }).unwrap()
         toast.success('Tuteur mis à jour')
       } else {
-        await createGuardian(payload).unwrap()
+        const result = await createGuardian(payload).unwrap()
         toast.success('Tuteur créé')
+
+        if (result.account) {
+          setCreatedAccount(result.account)
+        }
       }
 
       onOpenChange(false)
@@ -274,6 +280,13 @@ export function GuardianFormDialog({ open, onOpenChange, guardian }: GuardianFor
           </DialogFooter>
         </form>
       </DialogContent>
+
+      <CredentialsDialog
+        credentials={createdAccount}
+        onClose={() => setCreatedAccount(null)}
+        title="Compte tuteur créé"
+        personName={`${firstName} ${lastName}`}
+      />
     </Dialog>
   )
 }

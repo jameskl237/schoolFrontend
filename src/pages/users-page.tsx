@@ -92,7 +92,7 @@ export function UsersPage() {
                 <TableRow>
                   <TableHead>Nom</TableHead>
                   <TableHead>E-mail</TableHead>
-                  <TableHead>Rôles</TableHead>
+                  <TableHead>Rôle</TableHead>
                   <TableHead>Statut</TableHead>
                   {canManage && <TableHead className="w-10" />}
                 </TableRow>
@@ -105,16 +105,7 @@ export function UsersPage() {
                     </TableCell>
                     <TableCell className="text-muted-foreground">{user.email}</TableCell>
                     <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {user.roles.length === 0 && (
-                          <span className="text-xs text-muted-foreground">Aucun rôle</span>
-                        )}
-                        {user.roles.map((role) => (
-                          <Badge key={role.id} variant="secondary">
-                            {formatRoleName(role.name)}
-                          </Badge>
-                        ))}
-                      </div>
+                      <Badge variant="secondary">{formatRoleName(user.role.name)}</Badge>
                     </TableCell>
                     <TableCell>
                       {user.isActive ? (

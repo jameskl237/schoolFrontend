@@ -54,9 +54,20 @@ export interface CreatedParentCredentials {
   email: string | null
   loginEmail: string | null
   password: string | null
+  /** Vrai quand l'élève, faute de parents déclarés, est son propre responsable. */
+  isSelf: boolean
 }
 
-export type CreateStudentResponse = Student & { createdParent?: CreatedParentCredentials }
+/** Identifiants du compte ouvert pour l'élève lui-même. */
+export interface CreatedAccountCredentials {
+  loginEmail: string
+  password: string
+}
+
+export type CreateStudentResponse = Student & {
+  account?: CreatedAccountCredentials
+  createdParent?: CreatedParentCredentials
+}
 
 /** Cible une classe et/ou une année : pour un enseignant, le périmètre est corrélé aux deux. */
 export interface StudentFilters {

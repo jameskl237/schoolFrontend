@@ -17,6 +17,10 @@ import { GradeLevelsPage } from '@/pages/grade-levels-page'
 import { GradesPage } from '@/pages/grades-page'
 import { GuardiansPage } from '@/pages/guardians-page'
 import { InvoicesPage } from '@/pages/invoices-page'
+import { BulletinPrintPage } from '@/pages/bulletin-print-page'
+import { InfirmaryPage } from '@/pages/infirmary-page'
+import { LibraryPage } from '@/pages/library-page'
+import { LoansPage } from '@/pages/loans-page'
 import { LoginPage } from '@/pages/login-page'
 import { MyClassPage } from '@/pages/my-class-page'
 import { MyChildrenAttendancesPage } from '@/pages/my-children-attendances-page'
@@ -25,8 +29,10 @@ import { MyChildrenGradesPage } from '@/pages/my-children-grades-page'
 import { MyChildrenPage } from '@/pages/my-children-page'
 import { MyChildrenReportCardsPage } from '@/pages/my-children-report-cards-page'
 import { MyClassesPage } from '@/pages/my-classes-page'
+import { OrientationPage } from '@/pages/orientation-page'
 import { ParentsPage } from '@/pages/parents-page'
 import { PeriodsPage } from '@/pages/periods-page'
+import { RolesPage } from '@/pages/roles-page'
 import { SchoolLevelsPage } from '@/pages/school-levels-page'
 import { SectionsPage } from '@/pages/sections-page'
 import { SequencesPage } from '@/pages/sequences-page'
@@ -100,6 +106,34 @@ export const router = createBrowserRouter([
           {
             element: <RequirePermission anyOf={['guardians.manage']} />,
             children: [{ path: '/guardians', element: <GuardiansPage /> }],
+          },
+          {
+            element: <RequirePermission anyOf={['roles.manage']} />,
+            children: [{ path: '/roles', element: <RolesPage /> }],
+          },
+          {
+            element: <RequirePermission anyOf={['books.manage', 'loans.manage']} />,
+            children: [{ path: '/library', element: <LibraryPage /> }],
+          },
+          {
+            element: <RequirePermission anyOf={['loans.manage']} />,
+            children: [{ path: '/loans', element: <LoansPage /> }],
+          },
+          {
+            element: (
+              <RequirePermission anyOf={['medical-records.manage', 'infirmary.manage']} />
+            ),
+            children: [{ path: '/infirmary', element: <InfirmaryPage /> }],
+          },
+          {
+            element: <RequirePermission anyOf={['orientations.manage', 'counseling.manage']} />,
+            children: [{ path: '/orientation', element: <OrientationPage /> }],
+          },
+          {
+            element: <RequirePermission anyOf={['report-cards.view', 'report-cards.manage']} />,
+            children: [
+              { path: '/report-cards/:reportCardId/bulletin', element: <BulletinPrintPage /> },
+            ],
           },
           {
             element: (

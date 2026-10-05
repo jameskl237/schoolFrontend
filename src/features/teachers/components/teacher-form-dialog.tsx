@@ -3,6 +3,7 @@ import type { SerializedError } from '@reduxjs/toolkit'
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query'
 import { toast } from 'sonner'
 
+import { CredentialsDialog } from '@/components/credentials-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -22,7 +23,7 @@ import { useUsersQuery } from '@/features/users/api/users-api'
 import { getErrorMessage } from '@/lib/get-error-message'
 
 import { useCreateTeacherMutation, useUpdateTeacherMutation } from '../api/teachers-api'
-import type { Teacher } from '../types'
+import type { CreatedAccountCredentials, Teacher } from '../types'
 
 interface TeacherFormDialogProps {
   open: boolean
@@ -52,6 +53,7 @@ export function TeacherFormDialog({ open, onOpenChange, teacher }: TeacherFormDi
   const [hireDate, setHireDate] = useState('')
   const [specialty, setSpecialty] = useState('')
   const [userId, setUserId] = useState(NONE)
+  const [createdAccount, setCreatedAccount] = useState<CreatedAccountCredentials | null>(null)
 
   useEffect(() => {
     if (!open) return
@@ -90,7 +92,7 @@ export function TeacherFormDialog({ open, onOpenChange, teacher }: TeacherFormDi
         }).unwrap()
         toast.success('Enseignant mis à jour')
       } else {
-        await createTeacher({
+        const result = await createTeacher({
           employeeNumber,
           firstName,
           lastName,
@@ -102,6 +104,10 @@ export function TeacherFormDialog({ open, onOpenChange, teacher }: TeacherFormDi
           ...(linkedUserId !== null ? { userId: linkedUserId } : {}),
         }).unwrap()
         toast.success('Enseignant créé')
+
+        if (result.account) {
+          setCreatedAccount(result.account)
+        }
       }
 
       onOpenChange(false)
@@ -118,7 +124,8 @@ export function TeacherFormDialog({ open, onOpenChange, teacher }: TeacherFormDi
         <DialogHeader>
           <DialogTitle>{isEditing ? "Modifier l'enseignant" : 'Nouvel enseignant'}</DialogTitle>
           <DialogDescription>
-            Le compte rattaché détermine les classes que l&rsquo;enseignant verra dans l&rsquo;application.
+            Sans compte existant rattaché, un compte est ouvert automatiquement avec le rôle
+            enseignant : ses identifiants vous seront affichés.
           </DialogDescription>
         </DialogHeader>
 
@@ -254,6 +261,13 @@ export function TeacherFormDialog({ open, onOpenChange, teacher }: TeacherFormDi
           </DialogFooter>
         </form>
       </DialogContent>
+
+      <CredentialsDialog
+        credentials={createdAccount}
+        onClose={() => setCreatedAccount(null)}
+        title="Compte enseignant créé"
+        personName={`${firstName} ${lastName}`}
+      />
     </Dialog>
   )
 }

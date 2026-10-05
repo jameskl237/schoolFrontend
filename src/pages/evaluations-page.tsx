@@ -1,7 +1,19 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
+import type { ChangeEvent } from 'react'
 import type { SerializedError } from '@reduxjs/toolkit'
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query'
-import { ClipboardCheck, Lock, MoreHorizontal, PenLine, Plus, Unlock } from 'lucide-react'
+import {
+  ClipboardCheck,
+  FileText,
+  Loader2,
+  Lock,
+  MoreHorizontal,
+  Paperclip,
+  PenLine,
+  Plus,
+  Trash2,
+  Unlock,
+} from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
@@ -27,7 +39,9 @@ import { useClassSubjectsQuery } from '@/features/class-subjects/api/class-subje
 import {
   useDeleteEvaluationMutation,
   useEvaluationsQuery,
+  useRemoveExamPaperMutation,
   useReopenEvaluationMutation,
+  useUploadExamPaperMutation,
   useValidateEvaluationMutation,
 } from '@/features/evaluations/api/evaluations-api'
 import { EvaluationFormDialog } from '@/features/evaluations/components/evaluation-form-dialog'
@@ -36,6 +50,7 @@ import type { Evaluation } from '@/features/evaluations/types'
 import { usePeriodsQuery } from '@/features/periods/api/periods-api'
 import { useSequencesQuery } from '@/features/sequences/api/sequences-api'
 import { getErrorMessage } from '@/lib/get-error-message'
+import { openExamPaper } from '@/lib/open-exam-paper'
 
 const ALL = 'all'
 const dateFormatter = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -93,9 +108,17 @@ export function EvaluationsPage() {
   const [validateEvaluation] = useValidateEvaluationMutation()
   const [reopenEvaluation] = useReopenEvaluationMutation()
   const [deleteEvaluation] = useDeleteEvaluationMutation()
+  const [uploadExamPaper] = useUploadExamPaperMutation()
+  const [removeExamPaper] = useRemoveExamPaperMutation()
 
   const [editing, setEditing] = useState<Evaluation | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
+
+  // Upload d'une épreuve PDF : un seul input caché, dont l'évaluation cible est
+  // retenue au clic sur le bouton de la ligne.
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [pendingUpload, setPendingUpload] = useState<Evaluation | null>(null)
+  const [uploadingId, setUploadingId] = useState<number | null>(null)
 
   /** Seul l'enseignant de la matière agit sur l'évaluation — le backend l'impose aussi. */
   const isOwner = (evaluation: Evaluation) =>
@@ -126,6 +149,42 @@ export function EvaluationsPage() {
     if (!window.confirm(`Supprimer l'évaluation "${evaluation.title}" et ses notes ?`)) return
 
     void run(deleteEvaluation(evaluation.id).unwrap(), 'Évaluation supprimée')
+  }
+
+  const handleUploadFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+
+    if (!file || !pendingUpload) return
+
+    const evaluation = pendingUpload
+    setPendingUpload(null)
+    setUploadingId(evaluation.id)
+
+    try {
+      await uploadExamPaper({ id: evaluation.id, file }).unwrap()
+      toast.success('Épreuve mise en ligne')
+    } catch (error) {
+      toast.error(
+        getErrorMessage(error as FetchBaseQueryError | SerializedError) ?? 'Une erreur est survenue.',
+      )
+    } finally {
+      setUploadingId(null)
+    }
+  }
+
+  const handleRemovePaper = (evaluation: Evaluation) => {
+    const name = evaluation.examPaperName ?? 'cette épreuve'
+
+    if (!window.confirm(`Retirer l'épreuve "${name}" de cette évaluation ?`)) return
+
+    void run(removeExamPaper(evaluation.id).unwrap(), 'Épreuve retirée')
+  }
+
+  const handleViewPaper = (evaluation: Evaluation) => {
+    void openExamPaper(evaluation.id, evaluation.examPaperName ?? 'exam-paper.pdf').catch((error) =>
+      toast.error(getErrorMessage(error) ?? 'Impossible de consulter l\u2019épreuve.'),
+    )
   }
 
   return (
@@ -267,6 +326,7 @@ export function EvaluationsPage() {
                     <TableHead className="text-right">Barème</TableHead>
                     <TableHead className="text-right">Notes</TableHead>
                     <TableHead>Statut</TableHead>
+                    <TableHead>Épreuve</TableHead>
                     <TableHead className="w-10" />
                   </TableRow>
                 </TableHeader>
@@ -306,6 +366,65 @@ export function EvaluationsPage() {
                           <Badge variant={validated ? 'default' : 'outline'}>
                             {validated ? 'Validée' : 'En saisie'}
                           </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {owner ? (
+                            <div className="flex items-center gap-1.5">
+                              <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                aria-label={
+                                  evaluation.examPaperName
+                                    ? 'Remplacer l\u2019épreuve'
+                                    : 'Mettre en ligne l\u2019épreuve'
+                                }
+                                disabled={uploadingId === evaluation.id}
+                                onClick={() => {
+                                  setPendingUpload(evaluation)
+                                  fileInputRef.current?.click()
+                                }}
+                              >
+                                {uploadingId === evaluation.id ? (
+                                  <Loader2 className="animate-spin" />
+                                ) : (
+                                  <Paperclip />
+                                )}
+                              </Button>
+                              {evaluation.examPaperName && (
+                                <div className="flex items-center gap-1">
+                                  <Button
+                                    variant="link"
+                                    size="sm"
+                                    className="h-auto max-w-28 overflow-hidden p-0 text-ellipsis"
+                                    title={evaluation.examPaperName}
+                                    onClick={() => handleViewPaper(evaluation)}
+                                  >
+                                    <FileText />
+                                    {evaluation.examPaperName}
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon-xs"
+                                    aria-label="Retirer l’épreuve"
+                                    onClick={() => handleRemovePaper(evaluation)}
+                                  >
+                                    <Trash2 />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          ) : evaluation.examPaperName ? (
+                            <Button
+                              variant="link"
+                              size="sm"
+                              className="h-auto max-w-40 overflow-hidden p-0 text-ellipsis"
+                              title={evaluation.examPaperName}
+                              onClick={() => handleViewPaper(evaluation)}
+                            >
+                              <FileText />
+                              {evaluation.examPaperName}
+                            </Button>
+                          ) : null}
                         </TableCell>
                         <TableCell>
                           <DropdownMenu>
@@ -372,6 +491,14 @@ export function EvaluationsPage() {
           )}
         </Card>
       </Reveal>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="application/pdf"
+        className="hidden"
+        onChange={(event) => void handleUploadFile(event)}
+      />
 
       <EvaluationFormDialog open={dialogOpen} onOpenChange={setDialogOpen} evaluation={editing} />
     </>

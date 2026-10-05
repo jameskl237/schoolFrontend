@@ -1,6 +1,7 @@
 export interface StaffUserRole {
   id: number
   name: string
+  description?: string | null
 }
 
 export interface StaffUser {
@@ -13,7 +14,9 @@ export interface StaffUser {
   establishmentId: number
   createdAt: string
   updatedAt: string
-  roles: StaffUserRole[]
+  /** Un compte porte exactement un rôle : c'est lui qui dit ce qu'il est. */
+  roleId: number
+  role: StaffUserRole
 }
 
 export interface CreateUserRequest {
@@ -22,7 +25,7 @@ export interface CreateUserRequest {
   firstName: string
   lastName: string
   phone?: string
-  roleIds?: number[]
+  roleId: number
 }
 
 export interface UpdateUserRequest {
@@ -32,5 +35,5 @@ export interface UpdateUserRequest {
   firstName?: string
   lastName?: string
   phone?: string
-  roleIds?: number[]
+  roleId?: number
 }

@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
-import { GraduationCap } from 'lucide-react'
+import { FileText, GraduationCap } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 
 import { EmptyState } from '@/components/empty-state'
 import { PageHeader } from '@/components/page-header'
 import { Reveal } from '@/components/reveal'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -19,6 +20,9 @@ import { evaluationTypeLabels } from '@/features/evaluations/labels'
 import { useGradesQuery } from '@/features/grades/api/grades-api'
 import { GradeSheet } from '@/features/grades/components/grade-sheet'
 import { useSequencesQuery } from '@/features/sequences/api/sequences-api'
+import { getErrorMessage } from '@/lib/get-error-message'
+import { openExamPaper } from '@/lib/open-exam-paper'
+import { toast } from 'sonner'
 
 const dateFormatter = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
 
@@ -94,51 +98,77 @@ function StudentGrades() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Matière</TableHead>
-                    <TableHead>Évaluation</TableHead>
-                    <TableHead>Séquence</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Note</TableHead>
-                    <TableHead className="text-right">Coef.</TableHead>
-                    <TableHead>Appréciation</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {group.grades.map((grade) => (
-                    <TableRow key={grade.id}>
-                      <TableCell className="font-medium">
-                        {grade.evaluation.classSubject.subject.name}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {grade.evaluation.title}
-                        <span className="ml-1.5 text-xs">
-                          {evaluationTypeLabels[grade.evaluation.type]}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {grade.evaluation.sequence?.name ?? '—'}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {dateFormatter.format(new Date(grade.evaluation.date))}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {grade.isAbsent ? (
-                          <Badge variant="outline">Absent</Badge>
-                        ) : grade.score === null ? (
-                          '—'
-                        ) : (
-                          `${grade.score}/${grade.evaluation.maxScore}`
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums text-muted-foreground">
-                        {grade.evaluation.coefficient}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">{grade.comment ?? '—'}</TableCell>
+<TableRow>
+                      <TableHead>Matière</TableHead>
+                      <TableHead>Évaluation</TableHead>
+                      <TableHead>Séquence</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead className="text-right">Note</TableHead>
+                      <TableHead className="text-right">Coef.</TableHead>
+                      <TableHead>Appréciation</TableHead>
+                      <TableHead>Épreuve</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {group.grades.map((grade) => (
+                      <TableRow key={grade.id}>
+                        <TableCell className="font-medium">
+                          {grade.evaluation.classSubject.subject.name}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {grade.evaluation.title}
+                          <span className="ml-1.5 text-xs">
+                            {evaluationTypeLabels[grade.evaluation.type]}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {grade.evaluation.sequence?.name ?? '—'}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {dateFormatter.format(new Date(grade.evaluation.date))}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {grade.isAbsent ? (
+                            <Badge variant="outline">Absent</Badge>
+                          ) : grade.score === null ? (
+                            '—'
+                          ) : (
+                            `${grade.score}/${grade.evaluation.maxScore}`
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums text-muted-foreground">
+                          {grade.evaluation.coefficient}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">{grade.comment ?? '—'}</TableCell>
+                        <TableCell>
+                          {grade.evaluation.examPaperName ? (
+                            <Button
+                              variant="link"
+                              size="sm"
+                              className="h-auto max-w-36 overflow-hidden p-0 text-ellipsis"
+                              title={grade.evaluation.examPaperName}
+                              onClick={() =>
+                                void openExamPaper(
+                                  grade.evaluation.id,
+                                  grade.evaluation.examPaperName ?? 'exam-paper.pdf',
+                                ).catch((error) =>
+                                  toast.error(
+                                    getErrorMessage(error) ?? 'Impossible de consulter l\u2019épreuve.',
+                                  ),
+                                )
+                              }
+                            >
+                              <FileText />
+                              {grade.evaluation.examPaperName}
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
             </div>
           </Card>
         )

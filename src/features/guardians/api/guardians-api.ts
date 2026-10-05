@@ -1,7 +1,12 @@
 import { baseApi } from '@/app/api/base-api'
 import type { ApiSuccess } from '@/types/api'
 
-import type { CreateGuardianRequest, Guardian, UpdateGuardianRequest } from '../types'
+import type {
+  CreateGuardianRequest,
+  CreateGuardianResponse,
+  Guardian,
+  UpdateGuardianRequest,
+} from '../types'
 
 export const guardiansApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,10 +18,10 @@ export const guardiansApi = baseApi.injectEndpoints({
         ...(result?.map((guardian) => ({ type: 'Guardians' as const, id: guardian.id })) ?? []),
       ],
     }),
-    createGuardian: builder.mutation<Guardian, CreateGuardianRequest>({
+    createGuardian: builder.mutation<CreateGuardianResponse, CreateGuardianRequest>({
       query: (body) => ({ url: '/guardians', method: 'POST', body }),
-      transformResponse: (response: ApiSuccess<Guardian>) => response.data,
-      invalidatesTags: [{ type: 'Guardians', id: 'LIST' }],
+      transformResponse: (response: ApiSuccess<CreateGuardianResponse>) => response.data,
+      invalidatesTags: [{ type: 'Guardians', id: 'LIST' }, { type: 'Users', id: 'LIST' }],
     }),
     updateGuardian: builder.mutation<Guardian, UpdateGuardianRequest>({
       query: ({ id, ...body }) => ({ url: `/guardians/${id}`, method: 'PATCH', body }),

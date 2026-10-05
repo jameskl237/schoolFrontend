@@ -34,7 +34,17 @@ export interface StudentLinkRequest {
   canPickup?: boolean
 }
 
+/** Identifiants du compte ouvert d'office pour le tuteur. */
+export interface CreatedAccountCredentials {
+  loginEmail: string
+  password: string
+}
+
+export type CreateGuardianResponse = Guardian & { account: CreatedAccountCredentials }
+
 export interface CreateGuardianRequest {
+  /** Mot de passe initial du compte créé. */
+  password?: string
   firstName: string
   lastName: string
   phone?: string

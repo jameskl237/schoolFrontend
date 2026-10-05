@@ -12,6 +12,9 @@ export interface Evaluation {
   coefficient: number
   validatedAt: string | null
   validatedById: number | null
+  /** Épreuve PDF mise en ligne par l'enseignant (nom d'origine côté client). */
+  examPaperPath: string | null
+  examPaperName: string | null
   createdAt: string
   updatedAt: string
   classSubject: {

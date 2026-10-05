@@ -4,6 +4,7 @@ import type { FetchBaseQueryError } from '@reduxjs/toolkit/query'
 import { Plus, X } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { CredentialsDialog, type AccountCredentials } from '@/components/credentials-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -81,6 +82,7 @@ export function ParentFormDialog({ open, onOpenChange, parent }: ParentFormDialo
   }
 
   const isLoading = isCreating || isUpdating
+  const [createdAccount, setCreatedAccount] = useState<AccountCredentials | null>(null)
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -108,8 +110,12 @@ export function ParentFormDialog({ open, onOpenChange, parent }: ParentFormDialo
         await updateParent({ id: parent.id, ...payload }).unwrap()
         toast.success('Parent mis à jour')
       } else {
-        await createParent(payload).unwrap()
+        const result = await createParent(payload).unwrap()
         toast.success('Parent créé')
+
+        if (result.account) {
+          setCreatedAccount(result.account)
+        }
       }
 
       onOpenChange(false)
@@ -267,6 +273,13 @@ export function ParentFormDialog({ open, onOpenChange, parent }: ParentFormDialo
           </DialogFooter>
         </form>
       </DialogContent>
+
+      <CredentialsDialog
+        credentials={createdAccount}
+        onClose={() => setCreatedAccount(null)}
+        title="Compte parent créé"
+        personName={`${firstName} ${lastName}`}
+      />
     </Dialog>
   )
 }

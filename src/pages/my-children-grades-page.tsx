@@ -1,10 +1,12 @@
 import { useMemo } from 'react'
-import { GraduationCap } from 'lucide-react'
+import { FileText, GraduationCap } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { EmptyState } from '@/components/empty-state'
 import { PageHeader } from '@/components/page-header'
 import { Reveal } from '@/components/reveal'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -13,6 +15,8 @@ import { useMyChildren } from '@/features/children/hooks/use-my-children'
 import { evaluationTypeLabels } from '@/features/evaluations/labels'
 import { useGradesQuery } from '@/features/grades/api/grades-api'
 import type { Grade } from '@/features/grades/types'
+import { getErrorMessage } from '@/lib/get-error-message'
+import { openExamPaper } from '@/lib/open-exam-paper'
 
 const dateFormatter = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
 
@@ -122,6 +126,7 @@ export function MyChildrenGradesPage() {
                           <TableHead className="text-right">Note</TableHead>
                           <TableHead className="text-right">Coef.</TableHead>
                           <TableHead>Appréciation</TableHead>
+                          <TableHead>Épreuve</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -156,6 +161,32 @@ export function MyChildrenGradesPage() {
                             </TableCell>
                             <TableCell className="text-muted-foreground">
                               {grade.comment ?? '—'}
+                            </TableCell>
+                            <TableCell>
+                              {grade.evaluation.examPaperName ? (
+                                <Button
+                                  variant="link"
+                                  size="sm"
+                                  className="h-auto max-w-36 overflow-hidden p-0 text-ellipsis"
+                                  title={grade.evaluation.examPaperName}
+                                  onClick={() =>
+                                    void openExamPaper(
+                                      grade.evaluation.id,
+                                      grade.evaluation.examPaperName ?? 'exam-paper.pdf',
+                                    ).catch((error) =>
+                                      toast.error(
+                                        getErrorMessage(error) ??
+                                          'Impossible de consulter l\u2019épreuve.',
+                                      ),
+                                    )
+                                  }
+                                >
+                                  <FileText />
+                                  {grade.evaluation.examPaperName}
+                                </Button>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">—</span>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}

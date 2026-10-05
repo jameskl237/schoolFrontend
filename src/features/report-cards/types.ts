@@ -66,3 +66,52 @@ export interface UpdateReportCardRequest {
   lines?: ReportCardLineRequest[]
   published?: boolean
 }
+/** Une ligne du bulletin, telle que le format camerounais l'attend. */
+export interface BulletinSubjectLine {
+  subjectId: number
+  subject: string
+  average: number | null
+  coefficient: number
+  /** Note × coefficient. */
+  total: number | null
+  rank: number | null
+  teacherComment: string | null
+  teacherName: string | null
+}
+
+export interface Bulletin {
+  establishment: {
+    name: string
+    code: string
+    logoUrl: string | null
+    city: string | null
+    poBox: string | null
+    phone: string | null
+  }
+  academicYear: string
+  period: { name: string; order: number }
+  student: {
+    firstName: string
+    lastName: string
+    studentNumber: string
+    dateOfBirth: string
+    placeOfBirth: string | null
+    gender: string
+    photoUrl: string | null
+    repeating: boolean
+  }
+  className: string
+  headTeacher: string | null
+  lines: BulletinSubjectLine[]
+  totals: { points: number; coefficients: number; average: number | null; rank: number | null }
+  classStats: {
+    size: number
+    average: number | null
+    highestAverage: number | null
+    lowestAverage: number | null
+  }
+  conduct: string | null
+  appreciation: string | null
+  absences: { count: number; justified: number; late: number }
+  publishedAt: string | null
+}

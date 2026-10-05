@@ -1,7 +1,12 @@
 import { baseApi } from '@/app/api/base-api'
 import type { ApiSuccess } from '@/types/api'
 
-import type { CreateParentRequest, Parent, UpdateParentRequest } from '../types'
+import type {
+  CreateParentRequest,
+  CreateParentResponse,
+  Parent,
+  UpdateParentRequest,
+} from '../types'
 
 export const parentsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,10 +18,10 @@ export const parentsApi = baseApi.injectEndpoints({
         ...(result?.map((parent) => ({ type: 'Parents' as const, id: parent.id })) ?? []),
       ],
     }),
-    createParent: builder.mutation<Parent, CreateParentRequest>({
+    createParent: builder.mutation<CreateParentResponse, CreateParentRequest>({
       query: (body) => ({ url: '/parents', method: 'POST', body }),
-      transformResponse: (response: ApiSuccess<Parent>) => response.data,
-      invalidatesTags: [{ type: 'Parents', id: 'LIST' }],
+      transformResponse: (response: ApiSuccess<CreateParentResponse>) => response.data,
+      invalidatesTags: [{ type: 'Parents', id: 'LIST' }, { type: 'Users', id: 'LIST' }],
     }),
     updateParent: builder.mutation<Parent, UpdateParentRequest>({
       query: ({ id, ...body }) => ({ url: `/parents/${id}`, method: 'PATCH', body }),

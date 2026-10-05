@@ -13,7 +13,7 @@ export function AppHeader() {
   const [open, setOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border bg-background px-4 md:px-6">
+    <header className="sticky top-0 z-40 flex h-14 print:hidden shrink-0 items-center justify-between gap-3 border-b border-border bg-background px-4 md:px-6">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger
           render={<Button variant="ghost" size="icon" className="md:hidden" aria-label="Ouvrir le menu" />}

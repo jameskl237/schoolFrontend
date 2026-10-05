@@ -63,6 +63,26 @@ export const evaluationsApi = baseApi.injectEndpoints({
         { type: 'Grades', id: 'LIST' },
       ],
     }),
+    uploadExamPaper: builder.mutation<Evaluation, { id: number; file: File }>({
+      query: ({ id, file }) => {
+        const body = new FormData()
+        body.append('file', file)
+        return { url: `/evaluations/${id}/exam-paper`, method: 'POST', body }
+      },
+      transformResponse: (response: ApiSuccess<Evaluation>) => response.data,
+      invalidatesTags: [
+        { type: 'Evaluations', id: 'LIST' },
+        { type: 'Grades', id: 'LIST' },
+      ],
+    }),
+    removeExamPaper: builder.mutation<Evaluation, number>({
+      query: (id) => ({ url: `/evaluations/${id}/exam-paper`, method: 'DELETE' }),
+      transformResponse: (response: ApiSuccess<Evaluation>) => response.data,
+      invalidatesTags: [
+        { type: 'Evaluations', id: 'LIST' },
+        { type: 'Grades', id: 'LIST' },
+      ],
+    }),
   }),
 })
 
@@ -73,4 +93,6 @@ export const {
   useValidateEvaluationMutation,
   useReopenEvaluationMutation,
   useDeleteEvaluationMutation,
+  useUploadExamPaperMutation,
+  useRemoveExamPaperMutation,
 } = evaluationsApi

@@ -32,6 +32,9 @@ function firstFieldErrorMessage(details: unknown): string | null {
 const ERROR_MESSAGES: Record<string, string> = {
   ESTABLISHMENT_NOT_FOUND: "Ce code établissement n'existe pas.",
   USER_NOT_IN_ESTABLISHMENT: "Aucun compte avec cet e-mail dans cet établissement.",
+  USER_NOT_FOUND: "Aucun compte avec cet e-mail.",
+  ESTABLISHMENT_REQUIRED:
+    'Cet e-mail est utilisé dans plusieurs établissements : précisez le vôtre.',
   INVALID_PASSWORD: 'Mot de passe incorrect.',
   INVALID_CREDENTIALS: 'E-mail ou mot de passe incorrect.',
   ACCOUNT_DISABLED: 'Ce compte a été désactivé.',
