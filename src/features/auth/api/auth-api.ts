@@ -2,12 +2,24 @@ import { baseApi } from '@/app/api/base-api'
 import type { ApiSuccess } from '@/types/api'
 
 import { credentialsUpdated, loggedOut } from '../auth-slice'
-import type { AuthPayload, LoginRequest, User } from '../types'
+import type { AuthPayload, LoginRequest, RegisterRequest, User } from '../types'
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<AuthPayload, LoginRequest>({
       query: (body) => ({ url: '/auth/login', method: 'POST', body }),
+      transformResponse: (response: ApiSuccess<AuthPayload>) => response.data,
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled
+          dispatch(credentialsUpdated(data))
+        } catch {
+          // the caller reads the mutation's own `error` state — nothing to do here
+        }
+      },
+    }),
+    register: builder.mutation<AuthPayload, RegisterRequest>({
+      query: (body) => ({ url: '/auth/register', method: 'POST', body }),
       transformResponse: (response: ApiSuccess<AuthPayload>) => response.data,
       onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
         try {
@@ -48,4 +60,10 @@ export const authApi = baseApi.injectEndpoints({
   }),
 })
 
-export const { useLoginMutation, useRefreshMutation, useMeQuery, useLogoutMutation } = authApi
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useRefreshMutation,
+  useMeQuery,
+  useLogoutMutation,
+} = authApi

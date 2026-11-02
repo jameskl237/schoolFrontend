@@ -32,6 +32,18 @@ export interface LoginRequest {
   establishmentCode?: string
 }
 
+export interface RegisterRequest {
+  email: string
+  password: string
+  firstName: string
+  lastName: string
+  phone?: string
+  /** Format TYPE-VILLE-000, ex. SEC-YDE-014 */
+  establishmentCode: string
+  /** Revérifiée côté serveur : doit être identique à `password`. */
+  confirmPassword: string
+}
+
 export interface AuthPayload {
   user: User
   accessToken: string

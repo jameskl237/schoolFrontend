@@ -22,6 +22,7 @@ import { InfirmaryPage } from '@/pages/infirmary-page'
 import { LibraryPage } from '@/pages/library-page'
 import { LoansPage } from '@/pages/loans-page'
 import { LoginPage } from '@/pages/login-page'
+import { RegisterPage } from '@/pages/register-page'
 import { MyClassPage } from '@/pages/my-class-page'
 import { MyChildrenAttendancesPage } from '@/pages/my-children-attendances-page'
 import { MyChildrenDisciplinePage } from '@/pages/my-children-discipline-page'
@@ -47,7 +48,10 @@ import { ProtectedRoute, PublicOnlyRoute, RequireParent, RequirePermission } fro
 export const router = createBrowserRouter([
   {
     element: <PublicOnlyRoute />,
-    children: [{ path: '/login', element: <LoginPage /> }],
+    children: [
+      { path: '/login', element: <LoginPage /> },
+      { path: '/register', element: <RegisterPage /> },
+    ],
   },
   {
     element: <ProtectedRoute />,

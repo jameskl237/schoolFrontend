@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import type { SerializedError } from '@reduxjs/toolkit'
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query'
 import { AlertCircle } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -130,6 +130,13 @@ export function LoginPage() {
           {isLoading ? 'Connexion…' : 'Se connecter'}
         </Button>
       </form>
+
+      <p className="mt-6 text-center text-sm text-muted-foreground md:text-left">
+        Pas encore de compte ?{' '}
+        <Link to="/register" className="font-medium text-primary underline-offset-4 hover:underline">
+          Créer un compte
+        </Link>
+      </p>
     </AuthLayout>
   )
 }

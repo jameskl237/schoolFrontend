@@ -43,6 +43,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   INVALID_REFRESH_TOKEN: 'Votre session a expiré. Veuillez vous reconnecter.',
   INVALID_TOKEN: 'Votre session a expiré. Veuillez vous reconnecter.',
   UNAUTHORIZED: 'Vous devez être connecté pour accéder à cette page.',
+  TOO_MANY_REQUESTS: 'Trop de tentatives. Réessayez dans quelques minutes.',
 }
 
 const FALLBACK_MESSAGE = 'Une erreur est survenue. Veuillez réessayer.'
