@@ -1,0 +1,17 @@
+# SPA : toute URL qui n'est ni un fichier ni un dossier existant est servie par
+# index.html, pour que React Router gère /login, /register, /students...
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# index.html ne doit pas rester en cache : il référence les fichiers hashés du build.
+<IfModule mod_headers.c>
+  <Files "index.html">
+    Header set Cache-Control "no-cache"
+  </Files>
+</IfModule>
